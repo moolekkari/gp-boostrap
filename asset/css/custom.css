@@ -57,3 +57,38 @@ body {
 body.item.private #content {
   background-color: var(--bs-warning-bg-subtle) !important
 }
+
+/* External link indicator for Source and Blog post link properties */
+.property-dcterms-source .value a[href^="http"]::after,
+.property-dcterms-isReferencedBy .value a[href^="http"]::after {
+  content: "\f1c5";
+  font-family: "bootstrap-icons";
+  margin-left: 4px;
+  font-size: 0.8em;
+}
+
+/* Description and Abstract displayed as full-width blocks above metadata */
+.property.property-dcterms-description,
+.property.property-dcterms-abstract {
+  margin-bottom: 1rem;
+}
+
+/* Visual separation between multiple language values (only when more than one) */
+.property.property-dcterms-description .value,
+.property.property-dcterms-abstract .value {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+/* No border if only one value */
+.property.property-dcterms-description .value:only-child,
+.property.property-dcterms-abstract .value:only-child {
+  border-bottom: none;
+  padding: 0;
+}
+
+/* Language badge styling for better visibility */
+.property.property-dcterms-description .language,
+.property.property-dcterms-abstract .language {
+  margin-right: 0.5rem;
+}

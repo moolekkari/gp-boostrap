@@ -19,11 +19,72 @@ $filterLocaleCallback = function ($value) use ($lang) {
     $valueLang = $value->lang();
     return $valueLang == '' || strcasecmp($valueLang, $lang) === 0;
 };
+
+// Display Description and Abstract first as full-width blocks
+$fullWidthProperties = ['dcterms:abstract', 'dcterms:description'];
+foreach ($fullWidthProperties as $fullWidthTerm):
+    if (!isset($values[$fullWidthTerm])) {
+        continue;
+    }
+    $fullWidthData = $values[$fullWidthTerm];
+    $fullWidthValues = $fullWidthData['values'];
+    if ($filterLocale) {
+        $fullWidthValues = array_filter($fullWidthValues, $filterLocaleCallback);
+    }
+    if ($fullWidthValues):
+        $property = $fullWidthData['property'];
+        $propertyLabel = $fullWidthData['alternate_label'] ?: $translate($property->label());
+        $termClass = 'property-' . str_replace(':', '-', $fullWidthTerm);
+?>
+<div class="row mb-3">
+    <div class="property <?php echo $termClass; ?> col-12">
+        <dt><?php echo $escape($propertyLabel); ?></dt>
+        <?php foreach ($fullWidthValues as $value): ?>
+        <?php
+        $valueType = $value->type();
+        $valueLang = $value->lang();
+        $valueAnnotation = $value->valueAnnotation();
+        $class = ['value'];
+        if ('resource' == $valueType || strpos($valueType, 'resource') !== false) {
+            $class[] = 'resource';
+            $class[] = $escape($value->valueResource()->resourceName());
+        } elseif ('uri' == $valueType) {
+            $class[] = 'uri';
+        }
+        ?>
+        <div class="<?php echo implode(' ', $class); ?>" lang="<?php echo $escape($valueLang); ?>">
+            <?php if ($showLocale && $valueLang): ?>
+            <span class="language badge text-bg-light"><?php echo $valueLang; ?></span>
+            <?php endif; ?>
+            <span class="value-content"><?php echo $filterLocale ? $value->asHtml($lang) : $value->asHtml(); ?></span>
+            <?php if(!$value->isPublic()): ?>
+                <span class="o-icon-private" aria-role="tooltip" title="<?php echo $this->escapeHtml($translate('Private')); ?>" aria-label="<?php echo $this->escapeHtml($translate('Private')); ?>"></span>
+            <?php endif; ?>
+            <?php if ($valueAnnotation && $showValueAnnotations): ?>
+                <a href="#" class="expand" aria-label="<?php echo $this->escapeHtml($translate('Expand')); ?>">
+                    <span class="has-annotation o-icon-annotation" aria-role="tooltip" title="<?php echo $this->escapeHtml($translate('Has annotation')); ?>" aria-label="<?php echo $this->escapeHtml($translate('Has annotation')); ?>"></span>
+                </a>
+                <div class="collapsible annotation">
+                    <?php echo $valueAnnotation->displayValues(); ?>
+                </div>
+            <?php endif; ?>
+            <?php $this->trigger('view.show.value', ['value' => $value]); ?>
+        </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php
+    endif;
+endforeach;
 ?>
 
 <div class="row">
 <?php
 foreach ($values as $term => $propertyData):
+    // Skip description and abstract as they're already displayed above
+    if (in_array($term, ['dcterms:description', 'dcterms:abstract'])) {
+        continue;
+    }
     $propertyValues = $propertyData['values'];
     if ($filterLocale) {
         $propertyValues = array_filter($propertyValues, $filterLocaleCallback);
@@ -41,7 +102,8 @@ foreach ($values as $term => $propertyData):
         $propertyTerm = null;
     }
 ?>
-    <div class="property col-sm-6 col-md-3">
+    <?php $termClass = 'property-' . str_replace(':', '-', $term); ?>
+    <div class="property <?php echo $termClass; ?> col-sm-6 col-md-3">
         <dt>
         <?php echo $escape($propertyLabel); ?>
         <?php if ($propertyTerm !== null): ?>
