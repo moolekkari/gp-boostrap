@@ -67,28 +67,29 @@ body.item.private #content {
   font-size: 0.8em;
 }
 
-/* Description and Abstract displayed as full-width blocks above metadata */
+/* Description and Abstract displayed as full-width blocks */
 .property.property-dcterms-description,
 .property.property-dcterms-abstract {
-  margin-bottom: 1rem;
+  background-color: var(--bs-light-bg-subtle);
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
-/* Visual separation between multiple language values (only when more than one) */
+
 .property.property-dcterms-description .value,
 .property.property-dcterms-abstract .value {
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--bs-border-color);
+  margin-bottom: 0.35rem;
 }
 
-/* No border if only one value */
-.property.property-dcterms-description .value:only-child,
-.property.property-dcterms-abstract .value:only-child {
-  border-bottom: none;
-  padding: 0;
+.property.property-dcterms-description .value:last-child,
+.property.property-dcterms-abstract .value:last-child {
+  margin-bottom: 0;
 }
 
-/* Language badge styling for better visibility */
+/* Language badge styling */
 .property.property-dcterms-description .language,
 .property.property-dcterms-abstract .language {
   margin-right: 0.5rem;
+  font-size: 0.75rem;
 }
